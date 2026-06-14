@@ -141,19 +141,21 @@ You will need an endpoint and a key, both free. See [Get a key](#get-a-key) belo
 
 ## The nine tools
 
-| Tool | What it does |
-|---|---|
-| `check_technology` | Map a product or stack to ranked CVEs, de-duped across NVD CPE and OSV. |
-| `hunt_plan` | Turn a recon'd stack into a ranked dig-order with recurring bug-class loci. |
-| `enrich_cve` | One CVE, full dossier: CVSS, KEV, EPSS, SSVC, affected versions, live PoC. |
-| `verify_cve_claim` | Fact-check a CVE assertion; catch hallucinations and wrong attributes. |
-| `find_recent_high_risk` | What is newly dangerous: KEV / high-EPSS, optionally per product. |
-| `find_similar_vulns` | Semantic, by-mechanism search from a concept or a seed CVE. |
-| `search_vulns` | Exact full-text / CWE search across CVE and advisory summaries. |
-| `search_public_code` | Find where an exact code string appears across public repositories. |
-| `corpus_stats` | Corpus size and data freshness. |
+| Tool | Input | Returns |
+|---|---|---|
+| `check_technology` | a product (+ version, vendor) | ranked CVEs de-duped across NVD CPE + OSV, ambiguity-flagged |
+| `hunt_plan` | a recon'd stack | per-component dig-order + the recurring bug-class (CWE) loci |
+| `enrich_cve` | a CVE id | full dossier: CVSS, KEV, EPSS, SSVC, affected, Metasploit + live PoC repos |
+| `verify_cve_claim` | a CVE + asserted attributes | per-claim `supported` / `refuted` / `unverifiable` + evidence |
+| `find_recent_high_risk` | a window (+ product) | newly dangerous KEV / high-EPSS CVEs |
+| `find_similar_vulns` | a concept or seed CVE | mechanism-siblings across products, with cosine similarity |
+| `search_vulns` | free text (+ CWE) | ranked full-text matches + total coverage |
+| `search_public_code` | an exact code string | public repos where it appears (repo / file / url) |
+| `corpus_stats` | — | corpus size and data freshness |
 
 It lays out facts and ranked context, never an exploit or a payload. Your agent does the reasoning.
+
+**Full reference** — every argument, response field, and a live example per tool — in **[TOOLS.md](TOOLS.md)**.
 
 ## What it is not
 
