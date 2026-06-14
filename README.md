@@ -1,8 +1,12 @@
 # vuln-intel
 
+[![get a key: free](https://img.shields.io/badge/get_a_key-free-2ea44f)](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) ![MCP server](https://img.shields.io/badge/MCP-server-5865F2) ![corpus: 332k CVEs](https://img.shields.io/badge/corpus-332k_CVEs,_daily-1f6feb)
+
 **Most CVE tools hand your agent raw data. This one ranks it by what is actually being exploited, finds bugs by mechanism, and catches the CVEs your agent makes up.**
 
 A curated, hosted MCP corpus: **~332,000 CVEs**, fused from **NVD + CISA KEV + FIRST EPSS + OSV/GHSA + CISA Vulnrichment (SSVC)**, refreshed daily. Not another live-API wrapper.
+
+> **Free.** [Email me for a key](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) and you get an endpoint and a personal key. Tell me what you are hunting.
 
 ---
 
@@ -133,7 +137,7 @@ Or any MCP client (`mcp.json`):
 }
 ```
 
-It is **free**. Email **rozetyp@gmail.com** with what you are working on (bounty, pentest, research) and you get an endpoint and a personal key. Keys are per-user, so usage stays attributable and revocable.
+You will need an endpoint and a key, both free. See [Get a key](#get-a-key) below.
 
 ## The nine tools
 
@@ -155,10 +159,12 @@ It lays out facts and ranked context, never an exploit or a payload. Your agent 
 
 Not a scanner, not an exploit tool, not an SBOM / SCA replacement. A grounding, prioritization and fact-check layer for AI-assisted security work.
 
-## Field notes
+## Get a key
 
-What we learned building this, including the experiments that failed: what actually predicts exploitation, how to prioritize beyond CVSS, and whether a CVE corpus can make an LLM a better bug hunter. Published with the site, linked at launch.
+**It is free.** [Email rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) with what you are working on (bounty, pentest, research) and you get an endpoint and a personal key. Keys are per-user, attributable and revocable.
 
 ---
 
 For **authorized, defensive** security research and bug-bounty triage. Not for exploitation. Output is decision support, not a substitute for your own verification.
+
+© 2026 rozetyp. All rights reserved. This is not open source; see [LICENSE](LICENSE).
