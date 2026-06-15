@@ -1,12 +1,14 @@
+<img src="logo.svg" alt="vuln-intel logo" width="64" align="left">
+
 # vuln-intel
 
-[![get a key: free](https://img.shields.io/badge/get_a_key-free-2ea44f)](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) ![MCP server](https://img.shields.io/badge/MCP-server-5865F2) ![corpus: 332k CVEs](https://img.shields.io/badge/corpus-332k_CVEs,_daily-1f6feb)
+[![get a key: free](https://img.shields.io/badge/get_a_key-free-2ea44f)](https://mcp.rozetyp.com/signup) ![MCP server](https://img.shields.io/badge/MCP-server-5865F2) ![corpus: 332k CVEs](https://img.shields.io/badge/corpus-332k_CVEs,_daily-1f6feb)
 
 **Most CVE tools hand your agent raw data. This one ranks it by what is actually being exploited, finds bugs by mechanism, and catches the CVEs your agent makes up.**
 
 A curated, hosted MCP corpus: **~332,000 CVEs**, fused from **NVD + CISA KEV + FIRST EPSS + OSV/GHSA + CISA Vulnrichment (SSVC)**, refreshed daily. Not another live-API wrapper.
 
-> **Free.** [Email me for a key](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) and you get an endpoint and a personal key. Tell me what you are hunting.
+> **Free.** [Get a key](https://mcp.rozetyp.com/signup): enter your email and your personal key is sent over. Tell me what you are hunting.
 
 ---
 
@@ -119,7 +121,7 @@ Median time from disclosure to in-the-wild exploitation is now days, not months.
 ## Connect, free
 
 ```
-claude mcp add --transport http vuln-intel <YOUR_ENDPOINT> \
+claude mcp add --transport http vuln-intel https://mcp.rozetyp.com/mcp \
   --header "Authorization: Bearer <YOUR_KEY>"
 ```
 
@@ -130,14 +132,14 @@ Or any MCP client (`mcp.json`):
   "mcpServers": {
     "vuln-intel": {
       "type": "http",
-      "url": "<YOUR_ENDPOINT>",
+      "url": "https://mcp.rozetyp.com/mcp",
       "headers": { "Authorization": "Bearer <YOUR_KEY>" }
     }
   }
 }
 ```
 
-You will need an endpoint and a key, both free. See [Get a key](#get-a-key) below.
+You just need a key, free. See [Get a key](#get-a-key) below.
 
 ## The nine tools
 
@@ -163,7 +165,7 @@ Not a scanner, not an exploit tool, not an SBOM / SCA replacement. A grounding, 
 
 ## Get a key
 
-**It is free.** [Email rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) with what you are working on (bounty, pentest, research) and you get an endpoint and a personal key. Keys are per-user, attributable and revocable.
+**It is free.** Go to **[mcp.rozetyp.com/signup](https://mcp.rozetyp.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
 
 ---
 
