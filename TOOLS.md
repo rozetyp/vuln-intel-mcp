@@ -1,8 +1,16 @@
 # vuln-intel — tool reference
 
-Nine tools over Streamable HTTP (bearer-gated). Every response is **source-grounded** and fused
-from NVD, CISA KEV, FIRST EPSS, OSV/GHSA, and CISA Vulnrichment (SSVC). The server lays out facts
-and ranked context — never an exploit or a payload. Your agent does the reasoning.
+Thirteen tools over Streamable HTTP (bearer-gated): **nine CVE-intelligence** tools (source-grounded,
+fused from NVD, CISA KEV, FIRST EPSS, OSV/GHSA, CISA Vulnrichment/SSVC) and **four bug-bounty
+mechanic-transfer** tools distilled from ~14,000 disclosed reports. The server lays out facts, ranked
+context, and transferable precedent — never an exploit or a payload. Your agent reasons; the target
+decides what survives.
+
+> **Make your agent actually call these.** A great tool the agent never invokes is worthless — agents
+> default to (stale, hallucination-prone) recall. Paste the drop-in rules block from the
+> [README](README.md#the-catch-your-agent-wont-use-it-unless-you-make-it) so it reaches for the corpus
+> instead of its memory. **Numbers in the examples below are point-in-time and drift daily** — call
+> `corpus_stats` for live figures.
 
 Need an endpoint and key? See [Get a key](README.md#get-a-key) — it's free.
 
@@ -251,8 +259,115 @@ Corpus size and data freshness — no arguments.
 
 ```jsonc
 corpus_stats()
-→ { "cves": 332043, "kev_entries": 1619, "epss_scores": 309660,
-    "data_age_days": 0.32, "stale": false, "unembedded_summaries": 0 }
+→ { "cves": 364756, "kev_entries": 1629, "epss_scores": 341347,
+    "data_age_days": 0.31, "stale": false, "unembedded_summaries": 0 }
+    // point-in-time — the corpus grows daily; this call IS the live freshness source
+```
+
+---
+
+## `find_attack_approaches`
+
+Bug-bounty **mechanic transfer**: given a target, CVE, or bug class, retrieve the human *attack
+approaches* — distilled from ~14,000 disclosed, paid reports — that transfer to it. Each is a
+product-agnostic mechanic (`source → sink → trigger → preconditions → impact`), **novelty-ranked** to
+surface the non-obvious move over the common playbook. **Reach for it when:** you're hunting a bug
+class on a target and want the moves that have actually paid elsewhere.
+
+| arg | type | default | notes |
+|---|---|---|---|
+| `query` | string | `null` | a concept/target, e.g. `"ssrf reaching cloud metadata"` — **provide this or `cve_id`** |
+| `cve_id` | string | `null` | seed from a CVE's mechanism instead |
+| `bug_class` | string | `null` | optional filter, e.g. `"ssrf"` |
+| `tried` | string | `null` | what you've already tried — semantically excluded, so you get *what's left* |
+| `limit` | int | `10` | max approaches |
+
+**Returns:** `results[]` — each a mechanic card (`bug_class`, `trigger`, `source`, `sink`,
+`preconditions`, `impact`, `weakness`) + the disclosed report `url` and `similarity`, plus **live
+program-actionability** (`program_active`, `program_offers_bounty`) so you know it's still worth
+filing. `trigger` is the move to adapt; `similarity` is conceptual, not proof the bug is on your target.
+
+```jsonc
+find_attack_approaches(query="ssrf reaching cloud metadata", limit=3)
+→ [ { "program": "Reddit", "program_active": true, "bug_class": "SSRF",
+      "trigger": "Provide an unfiltered URL to the preview endpoint so the server fetches it and returns metadata.",
+      "url": "https://hackerone.com/reports/1960765", "similarity": 0.71 }, ... ]
+```
+
+---
+
+## `find_continuations`
+
+Position → continuations: given your **accumulated attacker position** (the capabilities you hold
+mid-hunt, product-free), retrieve the concrete *next moves* real disclosed reports played from a
+similar position — matched against full report bodies. **Reach for it when:** you've gained a foothold
+and want "what did people do *from here*?" — not a product lookup. Every move is a **legal move, not a
+finding.**
+
+| arg | type | default | notes |
+|---|---|---|---|
+| `position` | string | — | **required** — capability-shaped, e.g. `"a trusted internal component can be made to emit its own secret over an attacker channel, blind"` |
+| `program` | string | `null` | optional — scope to one program's reports |
+| `limit` | int | `10` | max continuations |
+
+**Returns:** `continuations[]` — each a `move_step` (the technique to transfer), `trigger`,
+`bug_class`/`weakness`, the report `url` + program-actionability, and crucially `status: "UNVERIFIED"`
+\+ a `decisive_check` you must run on the target. The corpus generates the move and the check; **the
+target decides if it survives.**
+
+```jsonc
+find_continuations(position="a component can be made to emit its own secret over an attacker channel, blind")
+→ [ { "move_step": "...", "trigger": "...", "status": "UNVERIFIED",
+      "decisive_check": "Read the target: does the precondition this step needs actually hold here?" }, ... ]
+```
+
+---
+
+## `assist_submission`
+
+Submission & escalation co-pilot: paste a draft finding → a **grounded brief** synthesized from the
+closest disclosed precedents — precedent/validity (is this an accepted, citable class?), what's
+novel/stronger about yours, an escalation playbook, and submission framing. **Reach for it when:** you
+have a finding and want to strengthen and frame it against real paid precedent before submitting.
+
+| arg | type | default | notes |
+|---|---|---|---|
+| `finding` | string | — | **required** — your draft finding, in prose |
+| `query` | string | `null` | override the retrieval text (default: the finding itself) |
+| `limit` | int | `15` | prior-art reports to ground on |
+
+**Returns:** `prior_art[]` (retrieved mechanic cards), `brief` (the synthesized write-up), and a
+**citation guard**: `citations.{grounded, ungrounded}` + `citations_grounded` (true only when every
+report the brief cited is in the retrieved set — *nothing fabricated*). `citations_grounded` guards the
+**citations**, not your finding — it is **not** a verdict that the bug is real.
+
+```jsonc
+assist_submission(finding="SSRF in an image-fetch endpoint reaches cloud metadata, returns IAM creds")
+→ { "prior_art": [ ... ], "brief": "1. PRECEDENT & VALIDITY ...",
+    "citations": { "grounded": ["978823","1369312"], "ungrounded": [] }, "citations_grounded": true }
+```
+
+---
+
+## `program_outcome_prior`
+
+Minute-zero scope → outcome prior: given a bug-bounty program, the **empirical bug-class distribution
+that historically landed** (paid, disclosed) on it, with lift over the global base rate — where to
+dig, and where it rarely pays. **Reach for it when:** you've just scoped a program and want to tilt
+effort before you've touched it. **Descriptive** (what landed), not a prediction.
+
+| arg | type | default | notes |
+|---|---|---|---|
+| `program` | string | — | **required** — `"hackerone:gitlab"` (platform:handle) |
+
+**Returns:** `n_reports`, `dig_here[]` (top classes by lift), `lands_rarely[]` (where NOT to look),
+`full_distribution[]` (each `{class, pct, n, global_pct, lift}` — watch `n`: a high lift on a small
+`n` is a thin prior), `examples_top_class`, and `caveats`. Withheld below a ~20-report floor.
+
+```jsonc
+program_outcome_prior(program="hackerone:gitlab")
+→ { "n_reports": 257, "dig_here": [ { "class": "SSRF", "pct": 7.0, "n": 18, "lift": 3.4 }, ... ],
+    "caveats": ["DESCRIPTIVE not prediction", "disclosure-selected", "payout not modeled"] }
 ```
 
 ---

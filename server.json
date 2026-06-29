@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.rozetyp/vuln-intel",
   "title": "vuln-intel",
-  "description": "Hosted CVE-intelligence MCP: exploitation-first ranking and a fact-checker for hallucinated CVEs",
-  "version": "1.0.0",
+  "description": "Hosted CVE + bug-bounty-mechanic MCP: exploitation-first ranking, CVE fact-check, mechanic transfer",
+  "version": "1.1.0",
   "repository": {
     "url": "https://github.com/rozetyp/vuln-intel-mcp",
     "source": "github"
