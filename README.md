@@ -220,6 +220,14 @@ It lays out facts, ranked context, and transferable precedent — never an explo
 
 **Full reference** — every argument, response field, and a live example per tool — in **[TOOLS.md](TOOLS.md)**.
 
+## Hunt with it: the skill + playbook
+
+Two **MIT-licensed** companion docs turn the corpus into landed findings, not CVE lookups: a self-contained
+Claude **[bug-bounty-hunting skill](bug-bounty-hunting/SKILL.md)** (drop the folder into `~/.claude/skills/`
+and it loads on "hunt for bugs" / "is this exploitable") and the deeper on-demand
+**[MCP playbook](bug-bounty-hunting/MCP_PLAYBOOK.md)** (per-tool gotchas, the ideation loop, the verification
+patterns). Both stand alone: see **[bug-bounty-hunting/](bug-bounty-hunting/)**.
+
 ## What it is not
 
 Not a scanner, not an exploit tool, not an SBOM / SCA replacement. A grounding, prioritization and fact-check layer for AI-assisted security work.
