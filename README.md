@@ -234,7 +234,7 @@ Not a scanner, not an exploit tool, not an SBOM / SCA replacement. A grounding, 
 
 ## Get a key
 
-**It is free.** Go to **[mcp.rozetyp.com/signup](https://vulntel.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
+**It is free.** Go to **[vulntel.com/signup](https://vulntel.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
 
 ---
 
