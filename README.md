@@ -2,13 +2,13 @@
 
 # vuln-intel
 
-[![get a key: free](https://img.shields.io/badge/get_a_key-free-2ea44f)](https://mcp.rozetyp.com/signup) ![MCP server](https://img.shields.io/badge/MCP-server-5865F2) ![corpus: 364k CVEs](https://img.shields.io/badge/corpus-364k_CVEs,_daily-1f6feb)
+[![get a key: free](https://img.shields.io/badge/get_a_key-free-2ea44f)](https://vulntel.com/signup) ![MCP server](https://img.shields.io/badge/MCP-server-5865F2) ![corpus: 364k CVEs](https://img.shields.io/badge/corpus-364k_CVEs,_daily-1f6feb)
 
 **Most CVE tools hand your agent raw data. This one ranks it by what's actually being exploited, finds bugs by mechanism, catches the CVEs your agent invents — and transfers attack mechanics from ~14,000 disclosed bug-bounty reports.**
 
 A curated, hosted MCP corpus: **~364,000 CVEs**, fused from **NVD + CISA KEV + FIRST EPSS + OSV/GHSA + CISA Vulnrichment (SSVC)**, plus a mechanic layer distilled from **~14,000 disclosed, paid bug-bounty reports** — refreshed daily. Not another live-API wrapper.
 
-> **Free.** [Get a key](https://mcp.rozetyp.com/signup): enter your email and your personal key is sent over. Tell me what you are hunting.
+> **Free.** [Get a key](https://vulntel.com/signup): enter your email and your personal key is sent over. Tell me what you are hunting.
 
 ---
 
@@ -234,7 +234,7 @@ Not a scanner, not an exploit tool, not an SBOM / SCA replacement. A grounding, 
 
 ## Get a key
 
-**It is free.** Go to **[mcp.rozetyp.com/signup](https://mcp.rozetyp.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
+**It is free.** Go to **[mcp.rozetyp.com/signup](https://vulntel.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
 
 ---
 

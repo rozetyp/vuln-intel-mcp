@@ -3,7 +3,7 @@
   "name": "io.github.rozetyp/vuln-intel",
   "title": "vuln-intel",
   "description": "Hosted CVE + bug-bounty-mechanic MCP: exploitation-first ranking, CVE fact-check, mechanic transfer",
-  "version": "1.1.0",
+  "version": "1.0.1",
   "repository": {
     "url": "https://github.com/rozetyp/vuln-intel-mcp",
     "source": "github"
@@ -15,7 +15,7 @@
       "headers": [
         {
           "name": "Authorization",
-          "description": "Bearer token. Get a free key at https://mcp.rozetyp.com/signup, then send the value: Bearer <your-key>",
+          "description": "Bearer token. Get a free key at https://vulntel.com/signup, then send the value: Bearer <your-key>",
           "isRequired": true,
           "isSecret": true
         }
