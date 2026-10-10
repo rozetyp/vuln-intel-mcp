@@ -2,8 +2,9 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.rozetyp/vuln-intel",
   "title": "vuln-intel",
-  "description": "Hosted CVE + bug-bounty-mechanic MCP: exploitation-first ranking, CVE fact-check, mechanic transfer",
-  "version": "1.0.1",
+  "description": "Free hosted CVE intel for bug-bounty agents: CVE fact-check, attack approaches from paid H1 reports",
+  "websiteUrl": "https://vulntel.com",
+  "version": "1.0.2",
   "repository": {
     "url": "https://github.com/rozetyp/vuln-intel-mcp",
     "source": "github"
@@ -15,7 +16,7 @@
       "headers": [
         {
           "name": "Authorization",
-          "description": "Bearer token. Get a free key at https://vulntel.com/signup, then send the value: Bearer <your-key>",
+          "description": "Bearer token. Get a free key at https://vulntel.com/signup, then send: Bearer <your-key>. The handshake and tool list work without a key; calling a tool needs one.",
           "isRequired": true,
           "isSecret": true
         }
