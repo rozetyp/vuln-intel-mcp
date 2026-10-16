@@ -7,7 +7,7 @@ else to install.
 - **[SKILL.md](SKILL.md)** is a self-contained Claude skill: expert adversarial cognition (attack the
   assumption, hit the seam, transfer a proven mechanism, drill to the mechanism) plus the honesty
   discipline that keeps a clever idea from becoming a fabricated report (acceptance != impact, the
-  7-Question kill-gate, prove the mechanism out-of-band), the hunt loop, and the tool interface. Drop the
+  validity gate, prove the mechanism out-of-band), the hunt loop, and the tool interface. Drop the
   `bug-bounty-hunting/` folder into your agent's skills directory (e.g. `~/.claude/skills/`) and it loads
   on triggers like "hunt for bugs" or "is this exploitable".
 - **[MCP_PLAYBOOK.md](MCP_PLAYBOOK.md)** is the deeper, on-demand operating manual for the MCP: the

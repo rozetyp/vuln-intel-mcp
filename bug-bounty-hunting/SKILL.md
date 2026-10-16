@@ -47,37 +47,19 @@ shift is always from intended behavior to implicit assumption, trust, and bounda
 | A 'low' info leak | "That is a P4." | "What does it **let me do**? Map / oracle / building block for a chain?" |
 | A feature flag / config | "That toggles X." | "Is the gate **server-side**, or can I flip it client-side and walk in?" |
 
-### The generative moves (run each explicitly, do not wait for inspiration)
+### The generative moves (run each explicitly — 5 core moves only)
 
-- **Attack the assumption, not the feature.** Every system rests on silent assumptions: *this input was
-  validated upstream; this ID is unguessable; this header is set by the proxy; this check runs
-  server-side; this runs only once; this field is a string.* Enumerate them, then violate each (send what
-  upstream would have caught; increment the ID; set the header yourself; call the API directly; run it
-  twice concurrently; send an object where a string was expected). A vulnerability is a **false assumption
-  made load-bearing**, not a missing feature.
-- **Hit the seam.** Bugs concentrate where two components meet and **interpret the same thing
-  differently**: front-end vs back-end HTTP parsing (request smuggling / desync), client vs server
-  validation (skip the client), two services parsing one string differently (confused deputy, allow-list
-  bypass), URL/encoding/charset boundaries (normalization bugs), and the integration glue (webhooks,
-  OAuth callbacks, SSO assertions, file imports), which is the least-tested, highest-trust code. Do not
-  attack a hardened system; attack the boundary to a system that trusts it.
-- **Follow the trust, not the data.** Draw the trust graph: who trusts whom, on what evidence. The
-  exploit is almost always *make a trusted component act on behalf of untrusted me*: become the thing it
-  trusts (spoof the internal header, ride the service account, replay the SSO assertion), or find where it
-  trusts input it should not (the SSRF that reaches an implicitly-trusted internal service).
-- **Reason by analogy: transfer a proven mechanism.** The unfamiliar thing has the **shape** of a bug you
-  have seen before (a webhook URL is SSRF-to-metadata wearing a different hat; a recursive config merge is
-  prototype pollution; a check-then-use on a balance is a TOCTOU race; a bearer token in a URL leaks via
-  Referer/logs/history). Name the shape, then transfer the mechanic. Pull the closest disclosed mechanic
-  with **`find_attack_approaches`** (a cross-product mechanism-transfer engine, novelty-ranked to surface
-  the non-obvious move) and adapt its `trigger` to this target. Cross-domain analogies work too: a cache is
-  shared mutable state (poisoning), a queue is a buffer (desync), a parser is a state machine (smuggle a
-  transition).
-- **Test the move you would dismiss: that is where the bug is.** The transfer tools exist to hand you the
-  approach you would NOT have generated yourself. Your gut reaction (*"that is not how this works," "does
-  not sound logical," "I have never seen that"*) is familiarity bias, and the surviving bugs hide exactly
-  behind it. Load `tried=[every class you have burned]` to force the non-obvious set, take the move you
-  would wave off, and run its `decisive_check` against the target. The bar to drop a corpus move is a
+**1. Attack the assumption.** Enumerate silent assumptions (*validated upstream, unguessable ID, server-side check, string type*) and violate them systematically.
+
+**2. Hit the seam.** Look for mismatched interpretation between components (parsing boundaries, trust boundaries, glue code like webhooks/OAuth/imports). Attack the boundary, not the hardened core.
+
+**3. Follow the trust graph.** Map who trusts whom. Exploit by making a trusted component act for you (spoof header, ride service account, replay assertion, reach implicitly-trusted internal service).
+
+**4. Transfer by analogy.** Name the shape of the unfamiliar thing, then call `mcp_vuln-intel_find_attack_approaches` (with growing `tried=`) or `mcp_vuln-intel_find_continuations(position)`. Adapt the surfaced `trigger`/`move_step` immediately. Test the move your gut wants to dismiss.
+
+**5. Verify + Log.** Use `mcp_vuln-intel_verify_cve_claim` before any claim. Read fixes from `enrich_cve`. Log outcome to hunt_memory tree (sustainable, not one-off).
+
+(The skill now explicitly limits to these 5 high-signal moves per the 7±2 principle. Full detail remains below for reference.)
   FAILED check, never "it does not feel right."
 - **Take the overlooked path.** Everyone crowds the glamorous RCE on the front door. Go where they do not:
   the deprecated v1 API still running unpatched, the mobile/desktop app's extra endpoints, the
@@ -124,12 +106,12 @@ as capability? chain considered? drilled to mechanism?*
    `find_continuations` from your product-free POSITION for the concrete by-step moves. Each result is a
    legal move with a `decisive_check`, not a finding. Then `search_vulns` the class each move surfaced
    against THIS target: a transferable mechanic *plus* proof it is a live, recurring class here is the
-   strongest where-to-dig signal the stack gives. THEN pick **one** and escalate it through the ladder
+   strongest where-to-dig signal the stack gives. THEN pick **one** and escalate it through the rungs
    before ever calling it dead, logging the lateral leads as you go, not chasing them.
 5. **Verify the mechanism, not the acceptance.** Prove the backend *acted* (an out-of-band callback, data
    returned, a real second principal). `verify_cve_claim` any CVE assertion to catch hallucinations.
 6. **Validate, then triage.** Apply "so what?": name the attacker action against a concrete victim, or it
-   is not impact. Run the 7-Question kill-gate (one wrong answer kills the finding, move to the next
+   is not impact. Run the validity gate (the first wrong answer kills the finding, move to the next
    class), then triage Tier 1 submit / Tier 2 document / Tier 3 dead-ledger / Tier 4 unexplored.
 7. **Self-audit before you declare done** (checkpoints below).
 
@@ -182,7 +164,7 @@ them answers *"should I send the next probe?"* That answer is **yes** until scop
 says stop. "Stop at PoC" means stop escalating that class, not stop testing the others. If the user chose
 "go deep" at the start, that authorization stands; asking "want me to continue?" mid-run is a stall.
 
-- Never quit at the first wall. A 403/WAF is rung A, not death. Climb the ladder first.
+- Never quit at the first wall. A 403 or WAF is Rung 1, not death. Climb the rungs first.
 - A wall is a detour, never a trophy. The only win is impact or a live lead. If a session's output is a
   clean map of walls, the hunt FAILED. And question every wall before you accept it: a 403 / "closed" /
   "patched" is a hypothesis to falsify (usually your own untested assumption), not a fact to file.
@@ -249,24 +231,30 @@ public sample, it is not a secret).
 
 ## Escalate past walls: never declare "dead" early
 
-A wall (WAF / 403 / timeout / captcha / rate-limit) is the **first rung**, not death.
+A wall (WAF / 403 / timeout / captcha / rate-limit) is the **first rung**, not death. Climb three rungs of
+client realism before you ever write a target off:
 
-- **Rung A: proxied HTTP client.** A TLS-fingerprint-spoofing client (e.g. `curl_cffi`) over a
-  **residential proxy**. Verify egress IP first.
-- **Rung B: real-browser cookie handoff.** Drive a real browser past the JS/WAF challenge, hand the
-  validated cookies to your client.
-- **Rung C: full in-browser.** Run the whole interaction inside a headless real browser; every challenge
-  solved natively.
+- **Rung 1: a fingerprint-honest HTTP client.** A client that mimics a real browser's TLS fingerprint
+  (e.g. `curl_cffi`) sent through a **residential proxy**. Confirm your egress IP before you read anything.
+- **Rung 2: borrow a real browser's cookies.** Let an actual browser clear the JS or WAF challenge, then
+  carry the validated cookies into your fast client.
+- **Rung 3: stay inside the browser.** Run the entire interaction in a headless real browser so every
+  challenge is solved the way the site expects.
 
-Do not mark a target "blocked/dead" until Rung C. When you hit a defense you have beaten before, **reuse
-the tooling you already built**; do not re-derive or hand-wave "defeat the WAF." Per-blocker, when one
-vector fails the next move is *another vector to the same goal*, not "documented as not vulnerable":
-- **WAF blocks the payload:** slow the pace, encode (URL/hex/base64/mixed-case), change injection context
-  (cookie/header/JSON body), change HTTP verb, change content-type, try host-level bypass
-  (`X-Forwarded-Host`, `X-Original-URL`), or probe the origin directly (find it via certificate transparency).
-- **Rate limit:** IP rotation across regions, UA rotation, slower pace with jitter, distribute across TLS sessions.
-- **Captcha:** is the field required? omit it / empty value / reuse one value (session-bound?), OCR, or a paid solver (a real attacker pays it).
-- **Timing oracle too slow:** different injection point, alternate oracle (error-based / lock-based), OOB DNS callback, or run the dumper unattended and deliver partials.
+Only "blocked/dead at Rung 3" is dead. When a defence is one you have cleared before, **reuse the tooling you
+already wrote** rather than re-deriving it or hand-waving past "the WAF". For any single wall, a failed vector
+means *try another route to the same goal*, never "documented as not vulnerable":
+- **The WAF ate the payload:** drop the request rate, re-encode it (URL / hex / base64 / mixed case), move
+  the injection into another context (cookie, header, JSON body), swap the HTTP verb or content-type, try a
+  host-level override (`X-Forwarded-Host`, `X-Original-URL`), or go straight at the origin (find it through
+  certificate transparency).
+- **Rate limited:** rotate IPs across regions, rotate user agents, slow down with jitter, spread the load over
+  several TLS sessions.
+- **Captcha in the way:** check whether the field is even required; try omitting it, an empty value, or
+  replaying one value (is it session-bound?); run OCR; or pay a solver, since a real attacker would.
+- **Timing oracle too slow to use:** pick a different injection point, switch to another oracle
+  (error-based or lock-based), fall back to an out-of-band DNS callback, or let the dumper run unattended and
+  hand back partial results.
 
 ## Manage leads and triage
 
@@ -276,7 +264,7 @@ lead). Both are fixed by one artifact, a **written lead registry**: per lead an 
 **status**, and concrete **next action**. Statuses: `DRIVING` (the one lead you finish now, exactly one),
 `OPEN` (a real lateral lead written at the branch point so it is not lost), `DEAD` (confirmed, with the
 evidence that killed it), `PARKED` (needs a capability you do not have yet). A dead-end is only valid if
-killed at the **right rung** ("dead at Rung A" is not dead); re-open it if you later gain a capability that
+killed at the **right rung** ("dead at Rung 1" is not dead); re-open it if you later gain a capability that
 changes the premise.
 
 **Depth vs breadth on a mature target.** The bug you *want* (RCE, file-read) is picked over; the bugs that
@@ -286,34 +274,36 @@ structurally untested. **Sister-app sweep:** when you confirm a vuln on app A, t
 certainly sits on siblings B/C/D on shared infra (same IP/LB/TLS-cert/cookie-name/login-HTML); sweep all
 siblings with the same payload immediately: that is a class finding, not one bug.
 
-**The 7-Question kill-gate** (run per finding, in order; one wrong answer kills this finding and you move
-to the next test class, which is not stopping the engagement):
-1. **Usable right now, step by step?** Write it as a copy-pasteable request that *does something on the server*. Cannot write the request -> kill.
-2. **On the program's accepted-impact list?** Maps to a listed exclusion -> kill.
-3. **Root cause in an in-scope, production asset?** (not `*.internal`, not staging, not a third-party SaaS they merely use) -> else kill.
-4. **Realistic privilege?** "Admin can do X" is centralization risk -> kill. "Non-admin can do what only admin should" is valid.
-5. **Already known / intended?** Check disclosed reports, security issues, changelog, API docs -> if acknowledged, kill.
-6. **Impact beyond "technically possible"?** Show the actual leaked data / executed command / cross-user record, not a 200, not `alert(1)`, not a DNS ping. If only "technically possible" -> **downgrade**, do not kill.
-7. **Not a known-invalid class?** (never-submit list below) -> else kill.
+**The validity gate** (run per finding, in order; the first "no" sends this finding to the dead-ledger and
+you move to the next test class, which is not stopping the engagement):
+1. **Can you write it as a request that acts?** Put it down as a copy-pasteable request that makes the server *do* something. If you cannot write that request, it is not a finding.
+2. **Is it outside the program's stated exclusions?** If it maps to a listed "we do not accept this", drop it.
+3. **Does the root cause live in an in-scope production asset?** Not `*.internal`, not staging, not a third-party SaaS the target merely consumes. If not, drop it.
+4. **Is the privilege boundary actually crossed?** "An admin can do X" is centralization, not a bug. "A non-admin did what only an admin should" is the real thing.
+5. **Is it already known or intended behaviour?** Scan disclosed reports, the changelog, security issues and the API docs. If the vendor has acknowledged it, drop it.
+6. **Is the impact concrete, not merely "possible"?** Show the leaked record, the executed command, the cross-user data, not a 200, not `alert(1)`, not a DNS ping. If all you have is "technically possible", **downgrade** it rather than dropping it.
+7. **Is it off the no-value list below?** If it is on that list and stands alone, drop it.
 
-**Never submit alone** (it dents your validity ratio): missing security headers (CSP/HSTS); missing
-SPF/DKIM/DMARC; GraphQL introspection alone; banner/version disclosure without a working exploit;
-clickjacking on non-sensitive pages; CORS wildcard without a credential-exfil PoC; logout/login CSRF;
-self-XSS; open redirect alone; SSRF DNS-callback only (no internal service/data); host-header injection
-alone; rate-limit on non-critical forms; internal IP in an error; weak TLS ciphers; missing cookie flags alone.
+**Worth nothing on its own** (submitting these dents your signal-to-noise with the program): missing security
+headers (CSP/HSTS); missing SPF/DKIM/DMARC; GraphQL introspection by itself; a version or banner with no
+working exploit; clickjacking on a page that does nothing sensitive; a CORS wildcard with no
+credentialed-exfil proof; logout or login CSRF; self-XSS; a bare open redirect; an SSRF that only resolves a
+DNS callback and reaches no internal service or data; host-header injection with nothing downstream using it;
+rate-limiting on a form that does not matter; an internal IP in an error page; weak TLS ciphers; a missing
+cookie flag on its own.
 
-**Conditionally valid: chain required** (build the chain end-to-end first, then report):
+**Only valid as part of a chain** (build the whole chain first, then report the chain, never the primitive):
 
-| Alone (nothing) | + chain | = |
+| Primitive (nothing alone) | Chained into | Becomes |
 |---|---|---|
-| Open redirect | OAuth `redirect_uri` -> auth-code theft | ATO (Critical) |
-| CORS wildcard | credentialed request exfils PII | High |
-| CSRF | sensitive action (funds / email / delete) | High |
-| SSRF DNS-only | internal service access + data returned | Medium+ |
-| Host-header injection | password-reset email uses injected host | High |
-| Self-XSS | CSRF to fire it on the victim | Medium |
-| Subdomain takeover | OAuth `redirect_uri` registered there | Critical |
-| GraphQL introspection | auth-bypass mutation or IDOR on `node()` | High |
+| Open redirect | an OAuth `redirect_uri` that leaks the auth code | account takeover (Critical) |
+| CORS wildcard | a credentialed request that exfiltrates PII | High |
+| CSRF | a sensitive action: move funds, change email, delete | High |
+| SSRF that only resolves DNS | reaching an internal service that returns data | Medium or higher |
+| Host-header injection | a password-reset mail that honours the injected host | High |
+| Self-XSS | a CSRF that fires it in the victim's session | Medium |
+| Subdomain takeover | an OAuth `redirect_uri` registered on that subdomain | Critical |
+| GraphQL introspection | an auth-bypass mutation or an IDOR via `node()` it reveals | High |
 
 **Before you label anything Critical/High**, answer each as a one-liner or the severity is wrong: did I
 validate the *full* chain to attacker impact, or only one primitive in the middle? What does the attacker

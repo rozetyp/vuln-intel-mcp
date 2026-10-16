@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Portions of SKILL.md and MCP_PLAYBOOK.md (the 7-Question kill-gate, the
-never-submit list, the conditionally-valid chain table, and the per-blocker
-escalation ladders) are adapted from the MIT-licensed Claude-BugHunter
-(https://github.com/elementalsouls/Claude-BugHunter), Copyright (c) its authors,
-and remain under the MIT License.
