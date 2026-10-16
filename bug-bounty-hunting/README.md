@@ -24,6 +24,4 @@ Then point your agent's MCP client at `mcp.rozetyp.com` and load the skill.
 
 ## License
 
-MIT, see [LICENSE](LICENSE). The operational artifacts (the kill-gate, never-submit list, chain table,
-and escalation ladders) are adapted from the MIT-licensed
-[Claude-BugHunter](https://github.com/elementalsouls/Claude-BugHunter).
+MIT, see [LICENSE](LICENSE).

@@ -393,7 +393,5 @@ version match is a lead. The tools lay out facts; you supply the expert reasonin
 
 ## Sources
 
-The generative cognition and failure modes are distilled from real bug-bounty / red-team engagement logs.
-The operational artifacts (the 7-Question kill-gate, the never-submit list, the conditionally-valid chain
-table, and the per-blocker escalation ladders) are adapted from the MIT-licensed Claude-BugHunter
-(`triage-validation` plus `redteam-mindset`), kept lean: the high-ROI gates, not the full machine.
+The generative cognition, the gates and the failure modes are distilled from real bug-bounty and
+red-team engagement logs.
