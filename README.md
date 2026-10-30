@@ -14,12 +14,13 @@ A curated, hosted MCP corpus: **~364,000 CVEs**, fused from **NVD + CISA KEV + F
 
 ## Why this, and not the next CVE wrapper
 
-Most CVE MCP servers are thin wrappers: at query time they fan out to the same free public APIs and hand back whatever comes out. This is different in five concrete ways.
+Most CVE MCP servers are thin wrappers: at query time they fan out to the same free public APIs and hand back whatever comes out. This is different in six concrete ways.
 
 - **A curated, embedded corpus, not a live proxy.** One record per vulnerability, fused across NVD, OSV/GHSA and KEV through an identity graph, with roughly 2,100 vendor-qualified product aliases and embeddings for semantic search. Queried locally, ranked consistently.
 - **SSVC as priority, not just CVSS.** Priority is exploitation-first: CISA SSVC (active / automatable / total impact), KEV and EPSS drive a P1 to P4 ranking. The wrapper MCPs do not carry SSVC at all.
 - **Search by mechanism, not keywords.** Semantic search finds the same bug *class* across different products. Keyword tools structurally cannot.
 - **It fact-checks the agent.** `verify_cve_claim` catches invented CVEs and wrong attributes. This is the one that matters most right now, with hallucinated AI bug reports flooding triage, and effectively no other CVE MCP does it.
+- **Backport-aware.** Paste a server banner (`OpenSSH_8.9p1 Ubuntu-3ubuntu0.10`, `Apache/2.4.62 (Debian)`) and each CVE carries the Debian / Ubuntu / Alpine tracker's verdict for that exact build next to the upstream one. Upstream-only tools call a patched distro host vulnerable.
 - **Right vendor, and no false zeros.** "GitHub Enterprise" resolves to the right vendor, not every product that ships an "enterprise_server." A product it cannot resolve returns `resolved: false` with suggestions, never a silent `0` that reads as "not affected." A false zero is the worst answer a security tool can give.
 
 The hard part of AI-assisted security is not *finding* CVEs. It is triage, prioritization, and false positives. That is what this targets.
@@ -88,7 +89,7 @@ It does not just list CVEs. It names the bug *class* a product family keeps fail
 
 ## Search by mechanism, across products
 
-`find_similar_vulns(cve_id="CVE-2021-44228")`, "what else works like Log4Shell":
+`search_vulns(cve_id="CVE-2021-44228")`, "what else works like Log4Shell":
 
 ```
 sim 0.88   CVE-2021-44832   Log4j2 JDBC Appender, JNDI LDAP RCE
@@ -106,7 +107,7 @@ P1 KEV  CVSS 9.8  CVE-2025-59718  Fortinet FortiOS / FortiProxy: signature-verif
 
 ## See what is being exploited right now
 
-`find_recent_high_risk(days=7)`, run live today:
+`search_vulns(days=7)`, run live today:
 
 ```
 P1 KEV CVSS 10.0  CVE-2026-10520  Ivanti Sentry: unauthenticated OS command injection -> root RCE
@@ -191,19 +192,18 @@ Or any MCP client (`mcp.json`):
 
 You just need a key, free. See [Get a key](#get-a-key) below.
 
-## The thirteen tools
+## The twelve tools
 
 *CVE intelligence:*
 
 | Tool | Input | Returns |
 |---|---|---|
-| `check_technology` | a product (+ version, vendor) | ranked CVEs de-duped across NVD CPE + OSV, ambiguity-flagged |
+| `check_technology` | a product (+ version, vendor), or a server banner | ranked CVEs de-duped across NVD CPE + OSV, ambiguity-flagged; distro build verdicts for Debian / Ubuntu / Alpine banners |
 | `hunt_plan` | a recon'd stack | per-component dig-order + the recurring bug-class (CWE) loci |
 | `enrich_cve` | a CVE id | full dossier: CVSS, KEV, EPSS, SSVC, affected, Metasploit + live PoC repos |
 | `verify_cve_claim` | a CVE + asserted attributes | per-claim `supported` / `refuted` / `unverifiable` + evidence |
-| `find_recent_high_risk` | a window (+ product) | newly dangerous KEV / high-EPSS CVEs |
-| `find_similar_vulns` | a concept or seed CVE | mechanism-siblings across products, with cosine similarity |
-| `search_vulns` | free text (+ CWE) | ranked full-text matches + total coverage |
+| `search_vulns` | a concept, a seed CVE, or a window (+ product) | keyword + semantic fused search; a seed CVE's mechanism-siblings across products; or the newly dangerous window (published or added to KEV) |
+| `observe` | a host | live recon: stack + endpoints from the homepage and JS bundles, joined to the corpus as a dig-order |
 | `search_public_code` | an exact code string | public repos where it appears (repo / file / url) |
 | `corpus_stats` | — | corpus size and data freshness |
 

@@ -1,8 +1,9 @@
 # vuln-intel — tool reference
 
-Thirteen tools over Streamable HTTP (bearer-gated): **nine CVE-intelligence** tools (source-grounded,
-fused from NVD, CISA KEV, FIRST EPSS, OSV/GHSA, CISA Vulnrichment/SSVC) and **four bug-bounty
-mechanic-transfer** tools distilled from ~14,000 disclosed reports. The server lays out facts, ranked
+Twelve tools over Streamable HTTP (bearer-gated): **eight CVE-intelligence** tools (source-grounded,
+fused from NVD, CISA KEV, FIRST EPSS, OSV/GHSA, CISA Vulnrichment/SSVC, plus the Debian, Ubuntu and
+Alpine security trackers' fixed builds) and **four bug-bounty mechanic-transfer** tools distilled from
+~14,000 disclosed reports. The server lays out facts, ranked
 context, and transferable precedent — never an exploit or a payload. Your agent reasons; the target
 decides what survives.
 
@@ -59,6 +60,28 @@ merged.
 `match.products` showing which identities hit), and — when one name spans several vendors —
 `ambiguous` + `distinct_vendors` (pass `vendor=` to filter). Large fan-outs are bounded:
 `matched_products` caps at 50 (`matched_products_truncated`), `query.searched_as` at 30.
+A product matching more CVE records than are considered (Chrome, the Linux kernel) carries `truncated`
+with the true total; KEV and weaponized records are always kept. Per card, `affected.sources_disagree`
+says when records disagree on whether your version is in range, and `affected.ranges_belong_to` when the
+ranges are a separate component's own versions (a provider package, an add-on), so not a verdict for yours.
+
+**Server banners and distro builds.** Distros backport fixes without changing the upstream version, so
+pass the banner verbatim (`"OpenSSH_9.2p1 Debian-2+deb12u3"`, `"OpenSSH_8.9p1 Ubuntu-3ubuntu0.10"`,
+`"Apache/2.4.62 (Debian)"`, or `version="1:9.2p1-2+deb12u3"`, `"openssh (Alpine 3.20)"` + `"9.7_p1-r4"`).
+Each card then also gets `distro_fix`: the Debian / Ubuntu / Alpine tracker's fixed build per release
+and, when your build is known, `fixed` / `affected` / `unfixed` / `not_listed` (the distro's record for
+the CVE lists other packages, not yours). The upstream `affected` is left as is, next to it. CVEs the
+distro settled for your build rank after the rest. Ubuntu banners don't name the release:
+`distro_context.release_basis` says how it was placed.
+
+```jsonc
+check_technology(product="OpenSSH_9.2p1 Debian-2+deb12u3")
+→ { "distro_context": { "distro": "debian", "release": "12", "codename": "bookworm" },
+    "distro_summary": { "fixed": 74, "affected": 8, "unfixed": 29, "no_record": 36 },
+    "results": [ { "cve_id": "CVE-2025-26465", "affected": { "status": "affected" },
+                   "distro_fix": [{ "release": "12", "fixed": "1:9.2p1-2+deb12u5", "status": "affected" }] },
+                 ... ] }   // regreSSHion is fixed in deb12u3, so it ranks after the open ones
+```
 
 ```jsonc
 check_technology(product="rhel")
@@ -125,76 +148,46 @@ verify_cve_claim(cve_id="CVE-2021-44228", severity="critical", exploited=true)
 
 ---
 
-## `find_similar_vulns`
-
-Semantic search — find vulns by *mechanism / meaning*, not keywords. Surfaces mechanism-siblings
-across different products that keyword search misses. Give **either** a free-text concept **or** a
-seed CVE.
-
-| arg | type | default | notes |
-|---|---|---|---|
-| `query` | string | `null` | a concept, e.g. `"JNDI lookup leading to RCE"` |
-| `cve_id` | string | `null` | a seed finding — returns the closest mechanisms to it |
-| `cwe` | string | `null` | optional weakness filter |
-| `days` | int | `null` | optional recency filter |
-| `order` | string | `similarity` | or `severity` |
-| `limit` | int | `20` | max results |
-
-**Returns:** result cards plus `similarity` (cosine, 1.0 = identical meaning). High similarity is
-conceptual kinship, not proof of the same bug.
-
-```jsonc
-find_similar_vulns(cve_id="CVE-2021-44228")
-→ [ { "cve_id": "CVE-2021-44832", "similarity": 0.88, "summary": "Log4j2 ... JDBC Appender JNDI ..." },
-    { "cve_id": "CVE-2022-40145", "similarity": 0.82, "summary": "Apache Karaf JDBC JNDI injection ..." } ]
-    // note the cross-product hit (Karaf) — same mechanism, different product
-```
-
----
-
 ## `search_vulns`
 
-Exact full-text / CWE search across CVE and advisory summaries — find vulns by concept or technique
-when you don't have a specific product or id. Keyword-based: expand acronyms if results look thin.
+One entry point, three retrieval modes picked from your arguments. (It replaces the former
+`find_similar_vulns` and `find_recent_high_risk`, folded in after an agent-selection A/B test.)
 
 | arg | type | default | notes |
 |---|---|---|---|
-| `query` | string | — | **required** — `"deserialization gadget chain"`; phrases, `OR`, `-negation` work |
+| `query` | string | `null` | a concept / technique / weakness, e.g. `"deserialization gadget chain"` |
+| `cve_id` | string | `null` | a seed CVE: returns its mechanism-siblings across OTHER products |
 | `cwe` | string | `null` | weakness filter, e.g. `"CWE-502"` or `"502"` |
-| `days` | int | `null` | recency filter on publication date |
-| `order` | string | `relevance` | or `severity` (P1>P4, EPSS, CVSS) |
+| `days` | int | `null` | window: published **or added to CISA KEV** within it |
+| `product` | string | `null` | product filter for the recent-window mode (CPE-name-resolved) |
+| `order` | string | fused | `relevance` = keyword only, `similarity` = semantic only, `severity` = rank P1>P4 |
 | `limit` | int | `20` | max results |
 
-**Returns:** `total_matches` (full coverage), `count`, `truncated`, and result cards each with a
-`relevance` score (ts_rank_cd).
+- **`query=`** fuses full-text keyword search and semantic mechanism search, so phrasing either way
+  surfaces. A recency phrase inside the query (`"this week"`, `"in the last 30 days"`, `"today"`) is
+  read as `days=`; `interpreted_as` says how the query was read.
+- **`cve_id=`** finds the same mechanism in different products (cosine `similarity`; kinship, not
+  proof of the same bug).
+- **`days=` / `product=` with no query** is the recent high-risk window (KEV / P1-P2 / high-EPSS). An
+  old CVE newly added to KEV counts as recent; each hit says why it is in the window (`in_window`,
+  `kev_added`).
+
+**Returns:** ranked cards (priority / KEV / EPSS / CWE), `total_matches`, and `mode` (which retrieval ran).
 
 ```jsonc
+search_vulns(cve_id="CVE-2021-44228")
+→ [ { "cve_id": "CVE-2021-44832", "similarity": 0.88, "summary": "Log4j2 ... JDBC Appender JNDI ..." },
+    { "cve_id": "CVE-2022-40145", "similarity": 0.82, "summary": "Apache Karaf JDBC JNDI injection ..." } ]
+    // the cross-product hit (Karaf): same mechanism, different product
+
 search_vulns(query="server-side request forgery cloud metadata", cwe="CWE-918", limit=5)
-→ { "total_matches": 71, "truncated": true,
-    "results": [{ "cve_id": "CVE-2026-10241", "cvss": 6.3, "cwes": ["CWE-918"],
+→ { "total_matches": 71, "results": [{ "cve_id": "CVE-2026-10241", "cwes": ["CWE-918"],
                   "summary": "... Cloud Instance Metadata Endpoint ... SSRF ..." }, ...] }
-```
 
----
-
-## `find_recent_high_risk`
-
-What's newly dangerous: recent CVEs that are KEV-exploited / P1–P2 / high-EPSS, optionally scoped to
-one product.
-
-| arg | type | default | notes |
-|---|---|---|---|
-| `product` | string | `null` | optional product filter |
-| `days` | int | `90` | lookback window on publication date |
-| `limit` | int | `25` | max results |
-
-**Returns:** `window_days`, `count` (total in window), and result cards ordered by risk.
-
-```jsonc
-find_recent_high_risk(days=30, limit=6)
-→ { "window_days": 30, "results": [
-      { "cve_id": "CVE-2026-10520", "priority": "P1", "cvss": 10.0, "kev": true,
-        "summary": "OS Command Injection in Ivanti Sentry ... unauthenticated root RCE" }, ...] }
+search_vulns(query="whats new and dangerous this week")
+→ { "mode": "recent", "interpreted_as": { "days": 7 },
+    "results": [{ "cve_id": "CVE-2026-109618", "priority": "P1", "in_window": "added_to_kev",
+                  "kev_added": "2026-10-26", "summary": "PHP ... longjmp() ..." }, ...] }
 ```
 
 ---
@@ -222,6 +215,25 @@ hunt_plan(technologies=["nginx","openssh"], per_tech=3)
         "recurring_loci": [{ "cwe": "CWE-400", "count": 8, "exploited_in_wild": 1 }, ...],
         "dig_here": [{ "cve_id": "CVE-2023-44487", "kev": true, "epss_percentile": 0.9997 }, ...] } ] }
 ```
+
+---
+
+## `observe`
+
+Live recon of one host: fingerprints the homepage and JS bundles (recovering the backend and API
+endpoints that header fingerprinting misses on SPAs), then joins the stack to the corpus as a ranked
+dig-order. Fetches only public pages; authorized targets only.
+
+| arg | type | default | notes |
+|---|---|---|---|
+| `host` | string | — | **required**: hostname or URL in an authorized scope |
+| `fresh` | bool | `false` | force a re-scan even if a recent (<24 h) one exists |
+| `per_tech` | int | `4` | top CVEs per component |
+
+**Non-blocking.** A recent scan returns `status="ready"` at once. A cache miss starts a background scan
+and returns `status="scanning"` with `retry_after_seconds`: call again with the same host until
+`ready`. `ready` carries the stack, endpoints, `dig_order`, `top_across_stack`, and `bounty_programs`
+(public programs whose scope lists the host).
 
 ---
 
@@ -279,7 +291,7 @@ class on a target and want the moves that have actually paid elsewhere.
 | `query` | string | `null` | a concept/target, e.g. `"ssrf reaching cloud metadata"` — **provide this or `cve_id`** |
 | `cve_id` | string | `null` | seed from a CVE's mechanism instead |
 | `bug_class` | string | `null` | optional filter, e.g. `"ssrf"` |
-| `tried` | string | `null` | what you've already tried — semantically excluded, so you get *what's left* |
+| `tried` | list of strings | `null` | bug classes you've already worked (`["IDOR","XSS"]`): those classes (+ common aliases) are left out and near-synonyms pushed down, so you get the nearest *other* approaches |
 | `limit` | int | `10` | max approaches |
 
 **Returns:** `results[]` — each a mechanic card (`bug_class`, `trigger`, `source`, `sink`,
