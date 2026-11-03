@@ -14,7 +14,7 @@ description: >-
 license: MIT
 metadata:
   author: rozetyp
-  version: 3.0.1
+  version: 3.0.2
   mcp-server: vulntel
 ---
 
@@ -230,7 +230,9 @@ public sample, it is not a secret).
 ## Escalate past walls: never declare "dead" early
 
 A wall (WAF / 403 / timeout / captcha / rate-limit) is the **first rung**, not death. Climb three rungs of
-client realism before you ever write a target off:
+client realism before you ever write a target off, **inside the program's rules**: if the program forbids
+automation, rate-limit evasion, captcha solving, WAF bypass or direct origin access, that wall is the program's
+answer. Record the lead as untested, say why, and stop there.
 
 - **Rung 1: a fingerprint-honest HTTP client.** A client that mimics a real browser's TLS fingerprint
   (e.g. `curl_cffi`) sent through a **residential proxy**. Confirm your egress IP before you read anything.
@@ -246,10 +248,11 @@ means *try another route to the same goal*, never "documented as not vulnerable"
   the injection into another context (cookie, header, JSON body), swap the HTTP verb or content-type, try a
   host-level override (`X-Forwarded-Host`, `X-Original-URL`), or go straight at the origin (find it through
   certificate transparency).
-- **Rate limited:** rotate IPs across regions, rotate user agents, slow down with jitter, spread the load over
-  several TLS sessions.
+- **Rate limited:** slow down with jitter and stay under the program's stated request rate; a limit the program
+  sets is not a wall to get around.
 - **Captcha in the way:** check whether the field is even required; try omitting it, an empty value, or
-  replaying one value (is it session-bound?); run OCR; or pay a solver, since a real attacker would.
+  replaying one value (is it session-bound?). A captcha that does its job may be the finding's answer; check the
+  program's rules before you automate past it.
 - **Timing oracle too slow to use:** pick a different injection point, switch to another oracle
   (error-based or lock-based), fall back to an out-of-band DNS callback, or let the dumper run unattended and
   hand back partial results.
