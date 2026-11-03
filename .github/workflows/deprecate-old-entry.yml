@@ -17,4 +17,4 @@ jobs:
         run: ./mcp-publisher login github-oidc
       - name: Deprecate all versions
         run: |
-          ./mcp-publisher status --status deprecated --all-versions --message "Renamed: use com.vulntel/mcp (https://mcp.vulntel.com/mcp). The old endpoint keeps working." io.github.rozetyp/vuln-intel
+          echo y | ./mcp-publisher status --status deprecated --all-versions --message "Renamed: use com.vulntel/mcp (https://mcp.vulntel.com/mcp). The old endpoint keeps working." io.github.rozetyp/vuln-intel
