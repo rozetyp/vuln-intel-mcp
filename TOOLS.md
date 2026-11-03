@@ -13,7 +13,7 @@ decides what survives.
 > instead of its memory. **Numbers in the examples below are point-in-time and drift daily** — call
 > `corpus_stats` for live figures.
 
-Need an endpoint and key? See [Get a key](README.md#get-a-key) — it's free.
+Need an endpoint? Nine tools work without a key; see [Get a key](README.md#get-a-key) for all 13 (it's free).
 
 ---
 
@@ -34,10 +34,10 @@ Most tools return CVE "cards" that share these fields, so they're defined once h
 
 **Priority is exploitation-first, not raw CVSS:**
 
-- **P1** — actively exploited (in KEV) → *patch immediately*
-- **P2** — exploited / imminently exploitable → *fix within days*
-- **P3** — likely or schedulable → *patch within weeks*
-- **P4** — monitor
+- **P1**: actively exploited (KEV or SSVC `active`) and critical (CVSS ≥ 9.0) → *patch immediately*
+- **P2**: actively exploited at lower severity → *fix within days*
+- **P3**: high CVSS, top-10% EPSS, or a public PoC / exploit module → *patch within weeks*
+- **P4**: monitor
 
 ---
 
@@ -271,9 +271,9 @@ Corpus size and data freshness — no arguments.
 
 ```jsonc
 corpus_stats()
-→ { "cves": 364756, "kev_entries": 1629, "epss_scores": 341347,
-    "data_age_days": 0.31, "stale": false, "unembedded_summaries": 0 }
-    // point-in-time — the corpus grows daily; this call IS the live freshness source
+→ { "cves": 422766, "kev_entries": 1766, "epss_scores": 396638,
+    "data_age_days": 0.28, "stale": false, "unembedded_summaries": 0 }
+    // 2026-11-03, point-in-time: the corpus grows daily; this call IS the live freshness source
 ```
 
 ---
@@ -389,7 +389,7 @@ program_outcome_prior(program="hackerone:gitlab")
 Fresh attack surface: bounty-eligible assets that entered a public program's scope in the last `days`
 (HackerOne, Bugcrowd, Intigriti, YesWeHack, mirrored daily). Most raw scope additions are not new (in one week
 57 of 80 were re-added after a removal), so each asset is checked against its program's own history: you get
-`new_asset` and `new_program` entries; re-added, renamed and redacted ones are only counted. **Reach for it
+`new_asset` and `new_program` entries; re-added, renamed and redacted ones are tallied in `filtered_out`, not listed. **Reach for it
 when:** you want surface nobody has picked over yet. Additions only (removals are not listed). Needs a key.
 
 | arg | type | default | notes |

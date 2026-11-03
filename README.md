@@ -115,7 +115,7 @@ P1 KEV CVSS 9.3   CVE-2026-50751  Check Point: IKEv1 auth bypass, remote-access 
 P2 KEV CVSS 8.8   CVE-2026-11645  Chrome V8: out-of-bounds read/write -> sandbox escape RCE
 ```
 
-Median time from disclosure to in-the-wild exploitation is now days, not months. The Ivanti bug above carried a CISA remediation deadline in the same week it landed. `corpus_stats` right now: **~364,800 CVEs, ~1,630 KEV entries, data under a day old** — these figures are point-in-time and drift daily, so call `corpus_stats` yourself for the live count rather than trusting the numbers on this page.
+Median time from disclosure to in-the-wild exploitation is now days, not months. The Ivanti bug above carried a CISA remediation deadline in the same week it landed. `corpus_stats` on 2026-11-03: **~422,800 CVEs, ~1,770 KEV entries, data under a day old**. These figures are point-in-time and drift daily, so call `corpus_stats` yourself for the live count rather than trusting the numbers on this page.
 
 ## Transfer attack mechanics from disclosed bug-bounty reports
 
@@ -155,7 +155,7 @@ Left alone, an agent answers from training data: stale, and it *invents* CVE ids
 You have the vulntel MCP. Your own CVE knowledge is a guess to be verified — prefer the corpus.
 Operating loop, in order:
 1. Choosing / scoping a bounty program → new_in_scope (what just entered a program's scope, re-adds filtered) and program_outcome_prior (which bug classes have actually PAID here).
-2. A live host → observe (call twice; the 2nd returns the cache). Mine endpoints[], recurring_loci, the CVE join — not two fields.
+2. A live host → observe (a cache miss returns status="scanning"; call again with the same host until "ready"). Mine endpoints[], recurring_loci, the CVE join, not just two fields.
 3. A product + version → check_technology / hunt_plan (dig-order + the recurring CWE loci).
 4. Before asserting ANY CVE / "affects X" / "severity Y" / "exploited" → verify_cve_claim. Never cite from memory.
 5. Feasibility of one CVE → enrich_cve; read the MECHANISM (POST vs GET, auth-required) to judge whether it chains.
