@@ -1,4 +1,4 @@
-# vuln-intel — tool reference
+# vulntel: tool reference
 
 Twelve tools over Streamable HTTP (bearer-gated): **eight CVE-intelligence** tools (source-grounded,
 fused from NVD, CISA KEV, FIRST EPSS, OSV/GHSA, CISA Vulnrichment/SSVC, plus the Debian, Ubuntu and

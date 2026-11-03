@@ -1,6 +1,6 @@
 # bug-bounty-hunting skill + MCP playbook
 
-Two **MIT-licensed** companion docs for driving the [vuln-intel](https://mcp.rozetyp.com/signup) MCP
+Two **MIT-licensed** companion docs for driving the [vulntel](https://mcp.vulntel.com/signup) MCP
 on a real bug-bounty hunt. Both are self-contained: load either one and it drives the MCP with nothing
 else to install.
 
@@ -19,8 +19,8 @@ consult on demand. They overlap by design so each stands alone.
 
 ## Use with the MCP
 
-Get a free key: **https://mcp.rozetyp.com/signup** (enter your email, your personal key is sent over).
-Then point your agent's MCP client at `mcp.rozetyp.com` and load the skill.
+Get a free key: **https://mcp.vulntel.com/signup** (enter your email, your personal key is sent over).
+Then point your agent's MCP client at `mcp.vulntel.com/mcp` and load the skill.
 
 ## License
 

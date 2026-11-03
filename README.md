@@ -1,6 +1,6 @@
-<img src="logo.svg" alt="vuln-intel logo" width="64" align="left">
+<img src="logo.svg" alt="vulntel logo" width="64" align="left">
 
-# vuln-intel
+# vulntel
 
 [![get a key: free](https://img.shields.io/badge/get_a_key-free-2ea44f)](https://vulntel.com/signup) ![MCP server](https://img.shields.io/badge/MCP-server-5865F2) ![corpus: 364k CVEs](https://img.shields.io/badge/corpus-364k_CVEs,_daily-1f6feb)
 
@@ -152,7 +152,7 @@ The cardinal sin is treating it as a severity-number checker. The job is to **tr
 Left alone, an agent answers from training data: stale, and it *invents* CVE ids under pressure. Paste this operating loop into your agent's rules (`CLAUDE.md`, Cursor/Windsurf, a system prompt):
 
 ```text
-You have the vuln-intel MCP. Your own CVE knowledge is a guess to be verified — prefer the corpus.
+You have the vulntel MCP. Your own CVE knowledge is a guess to be verified — prefer the corpus.
 Operating loop, in order:
 1. Scoping a bounty program → program_outcome_prior (which bug classes have actually PAID here).
 2. A live host → observe (call twice; the 2nd returns the cache). Mine endpoints[], recurring_loci, the CVE join — not two fields.
@@ -172,7 +172,7 @@ It surfaces the move and the precedent; **the target decides what survives.** Th
 ## Connect, free
 
 ```
-claude mcp add --transport http vuln-intel https://mcp.rozetyp.com/mcp \
+claude mcp add --transport http vulntel https://mcp.vulntel.com/mcp \
   --header "Authorization: Bearer <YOUR_KEY>"
 ```
 
@@ -181,9 +181,9 @@ Or any MCP client (`mcp.json`):
 ```json
 {
   "mcpServers": {
-    "vuln-intel": {
+    "vulntel": {
       "type": "http",
-      "url": "https://mcp.rozetyp.com/mcp",
+      "url": "https://mcp.vulntel.com/mcp",
       "headers": { "Authorization": "Bearer <YOUR_KEY>" }
     }
   }
@@ -234,7 +234,7 @@ Not a scanner, not an exploit tool, not an SBOM / SCA replacement. A grounding, 
 
 ## Get a key
 
-**It is free.** Go to **[vulntel.com/signup](https://vulntel.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vuln-intel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
+**It is free.** Go to **[vulntel.com/signup](https://vulntel.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vulntel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
 
 ---
 
