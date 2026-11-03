@@ -369,6 +369,7 @@ version match is a lead. The tools lay out facts; you supply the expert reasonin
 | Step | Tool | What it gives the hunt |
 |---|---|---|
 | **Minute-zero prior** | `program_outcome_prior` | which bug-classes historically LAND on this program and what to skip (lift over base-rate). Needs >=20 disclosed reports, descriptive not predictive |
+| Find fresh surface | `new_in_scope` | what just entered a program's scope (re-adds and renames filtered out), with the program's history and advisories for newly added repos; a lead list, then `observe` the host |
 | Recon a live host | `observe` | the real bundle/endpoints; do not guess |
 | Rank the dig order | `hunt_plan` | one ranked order plus recurring loci; do not sampling-tour |
 | Version-specific CVEs | `check_technology` | affected / out-of-range / unconfirmed; never a silent zero |

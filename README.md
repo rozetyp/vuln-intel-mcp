@@ -154,7 +154,7 @@ Left alone, an agent answers from training data: stale, and it *invents* CVE ids
 ```text
 You have the vulntel MCP. Your own CVE knowledge is a guess to be verified — prefer the corpus.
 Operating loop, in order:
-1. Scoping a bounty program → program_outcome_prior (which bug classes have actually PAID here).
+1. Choosing / scoping a bounty program → new_in_scope (what just entered a program's scope, re-adds filtered) and program_outcome_prior (which bug classes have actually PAID here).
 2. A live host → observe (call twice; the 2nd returns the cache). Mine endpoints[], recurring_loci, the CVE join — not two fields.
 3. A product + version → check_technology / hunt_plan (dig-order + the recurring CWE loci).
 4. Before asserting ANY CVE / "affects X" / "severity Y" / "exploited" → verify_cve_claim. Never cite from memory.
