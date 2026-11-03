@@ -1,9 +1,9 @@
 # vulntel: tool reference
 
-Twelve tools over Streamable HTTP (bearer-gated): **eight CVE-intelligence** tools (source-grounded,
+13 tools over Streamable HTTP: **eight CVE-intelligence** tools (source-grounded,
 fused from NVD, CISA KEV, FIRST EPSS, OSV/GHSA, CISA Vulnrichment/SSVC, plus the Debian, Ubuntu and
-Alpine security trackers' fixed builds) and **four bug-bounty mechanic-transfer** tools distilled from
-~14,000 disclosed reports. The server lays out facts, ranked
+Alpine security trackers' fixed builds), **four bug-bounty mechanic-transfer** tools distilled from
+~14,000 disclosed reports, and `new_in_scope` for fresh scope. The server lays out facts, ranked
 context, and transferable precedent — never an exploit or a payload. Your agent reasons; the target
 decides what survives.
 
@@ -380,6 +380,41 @@ effort before you've touched it. **Descriptive** (what landed), not a prediction
 program_outcome_prior(program="hackerone:gitlab")
 → { "n_reports": 257, "dig_here": [ { "class": "SSRF", "pct": 7.0, "n": 18, "lift": 3.4 }, ... ],
     "caveats": ["DESCRIPTIVE not prediction", "disclosure-selected", "payout not modeled"] }
+```
+
+---
+
+## `new_in_scope`
+
+Fresh attack surface: bounty-eligible assets that entered a public program's scope in the last `days`
+(HackerOne, Bugcrowd, Intigriti, YesWeHack, mirrored daily). Most raw scope additions are not new (in one week
+57 of 80 were re-added after a removal), so each asset is checked against its program's own history: you get
+`new_asset` and `new_program` entries; re-added, renamed and redacted ones are only counted. **Reach for it
+when:** you want surface nobody has picked over yet. Additions only (removals are not listed). Needs a key.
+
+| arg | type | default | notes |
+|---|---|---|---|
+| `days` | int | `7` | look-back window, 1 to 90 |
+| `platform` | string | `null` | `hackerone`, `bugcrowd`, `intigriti`, `yeswehack` |
+| `asset_type` | string | `null` | `url`, `wildcard`, `api`, `source` (code repositories), `mobile`, `other` |
+| `program` | string | `null` | program handle or name, substring match |
+| `limit` | int | `50` | max assets returned; `count` says how many qualified |
+
+**Returns:** `count`, `filtered_out` (`re_added`, `renamed`, `redacted`), `programs{}` (platform, max bounty,
+safe harbor, HackerOne disclosed-report history: count, top classes, last disclosure; `null` on other
+platforms) and `assets[]` (`kind`, `asset`, `asset_type`, `in_scope_since`, `max_severity`, `host` plus the
+cached `stack` if `observe` has fingerprinted it, else a `stack_note`; for a single GitHub repo,
+`repo_advisories`: advisories found under its name, check `match` is the same project).
+
+```jsonc
+new_in_scope(days=7)   // 2026-11-03
+→ { "count": 17, "filtered_out": { "re_added": 57, "renamed": 5, "redacted": 1 },
+    "assets": [ { "program": "hackerone:vercel", "kind": "new_asset", "asset_type": "source",
+                  "asset": "https://github.com/better-auth/better-auth", "in_scope_since": "2026-10-31",
+                  "repo_advisories": { "count": 30, "top": [ { "cve_id": "CVE-2025-61928", ... } ] } },
+                { "program": "bugcrowd:openai", "kind": "new_asset", "asset": "https://chatgpt.com/dots/",
+                  "host": "chatgpt.com", "stack": null, "stack_note": "not fingerprinted yet: observe('chatgpt.com')" },
+                ... ] }
 ```
 
 ---

@@ -190,9 +190,9 @@ Or any MCP client (`mcp.json`):
 }
 ```
 
-**Try it first with no key:** `claude mcp add --transport http vulntel https://mcp.vulntel.com/mcp`. Nine of the twelve tools run 25 times a day per network, and each answer says how many calls are left. A free key lifts that to 60 calls a minute and adds observe, assist_submission and search_public_code. See [Get a key](#get-a-key) below.
+**Try it first with no key:** `claude mcp add --transport http vulntel https://mcp.vulntel.com/mcp`. Nine of the 13 tools run 25 times a day per network, and each answer says how many calls are left. A free key lifts that to 60 calls a minute and adds observe, new_in_scope, assist_submission and search_public_code. See [Get a key](#get-a-key) below.
 
-## The twelve tools
+## The 13 tools
 
 *CVE intelligence:*
 
@@ -215,6 +215,7 @@ Or any MCP client (`mcp.json`):
 | `find_continuations` | your mid-hunt attacker position | the next moves real reports played from there, each `UNVERIFIED` + a decisive check |
 | `assist_submission` | a draft finding | grounded submission brief + escalation playbook, citation-guarded (`citations_grounded`) |
 | `program_outcome_prior` | a bug-bounty program | the bug classes that historically landed on it + lift over base rate |
+| `new_in_scope` | a window (+ platform, program, asset type) | assets that just entered a program's scope (HackerOne, Bugcrowd, Intigriti, YesWeHack), re-adds and renames filtered out, with the cached stack, repo advisories and the program's disclosed history |
 
 It lays out facts, ranked context, and transferable precedent — never an exploit or a payload. Your agent does the reasoning; the target decides what survives.
 
