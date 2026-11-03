@@ -19,7 +19,7 @@ consult on demand. They overlap by design so each stands alone.
 
 ## Use with the MCP
 
-Try it with no key (nine tools, 25 calls a day per network), or get a free key: **https://mcp.vulntel.com/signup** (enter your email, your personal key is sent over).
+Try it with no key (nine tools, 25 calls a day per IP address), or get a free key: **https://mcp.vulntel.com/signup** (enter your email, your personal key is sent over).
 Then point your agent's MCP client at `mcp.vulntel.com/mcp` and load the skill.
 
 ## License

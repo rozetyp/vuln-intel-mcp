@@ -13,7 +13,7 @@ decides what survives.
 > instead of its memory. **Numbers in the examples below are point-in-time and drift daily** — call
 > `corpus_stats` for live figures.
 
-Need an endpoint? Nine tools work without a key; see [Get a key](README.md#get-a-key) for all 13 (it's free).
+Need an endpoint? Nine tools work without a key (25 calls a day per IP address). `observe`, `new_in_scope`, `search_public_code` and `assist_submission` need a free key; see [Get a key](README.md#get-a-key).
 
 ---
 
@@ -372,7 +372,7 @@ effort before you've touched it. **Descriptive** (what landed), not a prediction
 |---|---|---|---|
 | `program` | string | — | **required** — `"hackerone:gitlab"` (platform:handle) |
 
-**Returns:** `n_reports`, `dig_here[]` (top classes by lift), `lands_rarely[]` (where NOT to look),
+**Returns:** `n_reports`, `dig_here[]` (top classes by lift), `lands_rarely[]` (classes rare in the disclosed sample, not classes to rule out),
 `full_distribution[]` (each `{class, pct, n, global_pct, lift}` — watch `n`: a high lift on a small
 `n` is a thin prior), `examples_top_class`, and `caveats`. Withheld below a ~20-report floor.
 

@@ -8,7 +8,7 @@
 
 A curated, hosted MCP corpus: **~422,000 CVEs**, fused from **NVD + CISA KEV + FIRST EPSS + OSV/GHSA + CISA Vulnrichment (SSVC)**, plus a mechanic layer distilled from **~14,000 disclosed, paid bug-bounty reports** — refreshed daily. Not another live-API wrapper.
 
-> **Free.** Try it with no key (nine tools, 25 calls a day per network), then [get a key](https://vulntel.com/signup): enter your email and your personal key is sent over. Tell me what you are hunting.
+> **Free.** Try it with no key (nine tools, 25 calls a day per IP address), then [get a key](https://mcp.vulntel.com/signup): enter your email and your personal key is sent over. Tell me what you are hunting.
 
 ---
 
@@ -236,7 +236,7 @@ Not a scanner, not an exploit tool, not an SBOM / SCA replacement. A grounding, 
 
 ## Get a key
 
-**It is free.** Go to **[vulntel.com/signup](https://vulntel.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vulntel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
+**It is free.** Go to **[mcp.vulntel.com/signup](https://mcp.vulntel.com/signup)**, enter your email, and your personal key is sent over. Prefer to ask directly? Email [rozetyp@gmail.com](mailto:rozetyp@gmail.com?subject=vulntel%20key) with what you are working on (bounty, pentest, research). Keys are per-user, attributable and revocable.
 
 ---
 
