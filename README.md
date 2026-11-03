@@ -2,11 +2,11 @@
 
 # vulntel
 
-[![get a key: free](https://img.shields.io/badge/get_a_key-free-2ea44f)](https://vulntel.com/signup) ![MCP server](https://img.shields.io/badge/MCP-server-5865F2) ![corpus: 364k CVEs](https://img.shields.io/badge/corpus-364k_CVEs,_daily-1f6feb)
+[![try it: no key needed](https://img.shields.io/badge/try_it-no_key_needed-2ea44f)](#connect-free) ![MCP server](https://img.shields.io/badge/MCP-server-5865F2) ![corpus: 422k CVEs](https://img.shields.io/badge/corpus-422k_CVEs,_daily-1f6feb)
 
 **Most CVE tools hand your agent raw data. This one ranks it by what's actually being exploited, finds bugs by mechanism, catches the CVEs your agent invents — and transfers attack mechanics from ~14,000 disclosed bug-bounty reports.**
 
-A curated, hosted MCP corpus: **~364,000 CVEs**, fused from **NVD + CISA KEV + FIRST EPSS + OSV/GHSA + CISA Vulnrichment (SSVC)**, plus a mechanic layer distilled from **~14,000 disclosed, paid bug-bounty reports** — refreshed daily. Not another live-API wrapper.
+A curated, hosted MCP corpus: **~422,000 CVEs**, fused from **NVD + CISA KEV + FIRST EPSS + OSV/GHSA + CISA Vulnrichment (SSVC)**, plus a mechanic layer distilled from **~14,000 disclosed, paid bug-bounty reports** — refreshed daily. Not another live-API wrapper.
 
 > **Free.** Try it with no key (nine tools, 25 calls a day per network), then [get a key](https://vulntel.com/signup): enter your email and your personal key is sent over. Tell me what you are hunting.
 
