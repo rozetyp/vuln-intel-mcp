@@ -4,7 +4,7 @@
   "title": "vulntel",
   "description": "Free hosted CVE intel for bug-bounty agents: CVE fact-check, attack approaches from paid H1 reports",
   "websiteUrl": "https://vulntel.com",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "repository": {
     "url": "https://github.com/rozetyp/vulntel-mcp",
     "source": "github"
@@ -16,8 +16,8 @@
       "headers": [
         {
           "name": "Authorization",
-          "description": "Bearer token. Get a free key at https://vulntel.com/signup, then send: Bearer <your-key>. The handshake and tool list work without a key; calling a tool needs one.",
-          "isRequired": true,
+          "description": "Optional bearer token. Without one, nine of the twelve tools run 25 times a day per network (the answers say how many calls are left). A free key from https://vulntel.com/signup lifts that to 60 calls a minute and adds observe, assist_submission and search_public_code: send Bearer <your-key>.",
+          "isRequired": false,
           "isSecret": true
         }
       ]

@@ -8,7 +8,7 @@
 
 A curated, hosted MCP corpus: **~364,000 CVEs**, fused from **NVD + CISA KEV + FIRST EPSS + OSV/GHSA + CISA Vulnrichment (SSVC)**, plus a mechanic layer distilled from **~14,000 disclosed, paid bug-bounty reports** — refreshed daily. Not another live-API wrapper.
 
-> **Free.** [Get a key](https://vulntel.com/signup): enter your email and your personal key is sent over. Tell me what you are hunting.
+> **Free.** Try it with no key (nine tools, 25 calls a day per network), then [get a key](https://vulntel.com/signup): enter your email and your personal key is sent over. Tell me what you are hunting.
 
 ---
 
@@ -190,7 +190,7 @@ Or any MCP client (`mcp.json`):
 }
 ```
 
-You just need a key, free. See [Get a key](#get-a-key) below.
+**Try it first with no key:** `claude mcp add --transport http vulntel https://mcp.vulntel.com/mcp`. Nine of the twelve tools run 25 times a day per network, and each answer says how many calls are left. A free key lifts that to 60 calls a minute and adds observe, assist_submission and search_public_code. See [Get a key](#get-a-key) below.
 
 ## The twelve tools
 
