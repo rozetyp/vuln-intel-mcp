@@ -6,18 +6,16 @@ description: >-
   assumptions and the seams between systems, drill to the mechanism, then keep it honest with proof
   and persistence (acceptance != impact, never quit at the first wall). Use when hunting bugs, doing
   bug-bounty recon or triage, mapping an attack surface, getting unstuck on a finding, deciding whether
-  something is exploitable or submittable, or escalating past a wall. Pairs with the cloud vuln-intel
-  MCP corpus tools (find_attack_approaches for analogical mechanism transfer, find_continuations for a
-  product-free position to by-step moves, hunt_plan, check_technology, observe, enrich_cve,
-  verify_cve_claim, search_vulns, program_outcome_prior, assist_submission) and, for deep multi-session
-  hunts, an optional separate self-hosted memory MCP (hunt_memory_mirror/record). Triggers on "hunt for
-  bugs", "bug bounty", "find vulnerabilities", "think like an attacker", "different angle", "overlooked
+  something is exploitable or submittable, or escalating past a wall. Pairs with the hosted vulntel
+  MCP (find_attack_approaches and find_continuations for mechanism transfer, new_in_scope, observe,
+  hunt_plan, verify_cve_claim and more) and, for deep multi-session hunts, an optional self-hosted
+  memory MCP. Triggers on "hunt for bugs", "bug bounty", "find vulnerabilities", "think like an attacker", "different angle", "overlooked
   approach", "is this exploitable", "attack surface", "escalate this finding", "hunt this target deeply".
 license: MIT
 metadata:
   author: rozetyp
-  version: 3.0.0
-  mcp-server: vuln-intel
+  version: 3.0.1
+  mcp-server: vulntel
 ---
 
 # Bug-Bounty Hunting
@@ -55,9 +53,9 @@ shift is always from intended behavior to implicit assumption, trust, and bounda
 
 **3. Follow the trust graph.** Map who trusts whom. Exploit by making a trusted component act for you (spoof header, ride service account, replay assertion, reach implicitly-trusted internal service).
 
-**4. Transfer by analogy.** Name the shape of the unfamiliar thing, then call `mcp_vuln-intel_find_attack_approaches` (with growing `tried=`) or `mcp_vuln-intel_find_continuations(position)`. Adapt the surfaced `trigger`/`move_step` immediately. Test the move your gut wants to dismiss.
+**4. Transfer by analogy.** Name the shape of the unfamiliar thing, then call `find_attack_approaches` (with growing `tried=`) or `find_continuations(position)`. Adapt the surfaced `trigger`/`move_step` immediately. Test the move your gut wants to dismiss.
 
-**5. Verify + Log.** Use `mcp_vuln-intel_verify_cve_claim` before any claim. Read fixes from `enrich_cve`. Log outcome to hunt_memory tree (sustainable, not one-off).
+**5. Verify + Log.** Use `verify_cve_claim` before any CVE claim. Read fixes from `enrich_cve`. If you run the optional hunt-memory MCP, log the outcome to its tree (sustainable, not one-off).
 
 (The skill now explicitly limits to these 5 high-signal moves per the 7±2 principle. Full detail remains below for reference.)
   FAILED check, never "it does not feel right."
@@ -95,7 +93,7 @@ as capability? chain considered? drilled to mechanism?*
 1. **Frame the engagement.** Scope vs out-of-scope, payout ceiling, traffic-ID header, stop-and-report
    rules. Knowing the boundary up front kills unpayable findings before you spend effort. If the program
    has >=20 disclosed reports, pull `program_outcome_prior` for the minute-zero prior: which bug-classes
-   actually LAND here and which to skip, before you form a target you have no tacit knowledge of.
+   actually LAND here and which rarely do (reorder your attention; never rule a class out on the prior alone), before you form a target you have no tacit knowledge of.
 2. **Recon: ground in the REAL artifact.** `observe` the host; *read* the bundle/source for real
    endpoints, config, keys, auth logic. Never brute-guess what is in front of you. Verify your egress IP.
 3. **Map to a ranked dig order and a written LEAD REGISTRY.** `hunt_plan` for the order plus recurring
@@ -105,7 +103,7 @@ as capability? chain considered? drilled to mechanism?*
    target's actual capability, `tried=[classes already covered]` to force the non-obvious set), then
    `find_continuations` from your product-free POSITION for the concrete by-step moves. Each result is a
    legal move with a `decisive_check`, not a finding. Then `search_vulns` the class each move surfaced
-   against THIS target: a transferable mechanic *plus* proof it is a live, recurring class here is the
+   against THIS target: a transferable mechanic *plus* evidence that the class recurs in this stack is the
    strongest where-to-dig signal the stack gives. THEN pick **one** and escalate it through the rungs
    before ever calling it dead, logging the lateral leads as you go, not chasing them.
 5. **Verify the mechanism, not the acceptance.** Prove the backend *acted* (an out-of-band callback, data
@@ -170,7 +168,7 @@ says stop. "Stop at PoC" means stop escalating that class, not stop testing the 
   "patched" is a hypothesis to falsify (usually your own untested assumption), not a fact to file.
 - Never declare victory after one finding. Keep digging; there is almost always more in the same place.
 - Never confuse acceptance / 200 / version with impact. Prove the mechanism out-of-band.
-- Never report a number you did not verify. `verify_cve_claim` before any severity/payout claim.
+- Never report a number you did not verify. `verify_cve_claim` before any CVE severity claim; a payout figure comes from the program's own table.
 - Never use the transfer engine as a fact-checker. `find_attack_approaches` / `find_continuations`
   GENERATE approaches (the corpus's highest value); `verify_cve_claim` / `check_technology` / `enrich_cve`
   only CONFIRM one lead (its lowest). If you ran only the confirm tools on a single glamorous CVE and
@@ -325,7 +323,7 @@ move is to go deeper. The urge to wrap up is the signal to keep going.
 1. **Premature victory.** You announce success and offer the report off the first minor thing. A finding is the *start* of work; keep digging the same place.
 2. **Excitement about non-findings.** You present endpoints/versions/hostnames/config as wins. Knowing facts that describe the system is not impact; apply "so what?" first.
 3. **Acceptance mistaken for impact.** "Returned 200 / accepted / version matches" treated as exploitation. Prove the backend acted.
-4. **Fabricated severity or dollar figures.** A confident severity/payout on an unproven finding. It is a hypothesis until live-retested; `verify_cve_claim` first.
+4. **Fabricated severity or dollar figures.** A confident severity/payout on an unproven finding. It is a hypothesis until live-retested; `verify_cve_claim` any CVE severity you cite, and take payouts from the program's table.
 5. **Shallow coverage.** You judge a result dead without reading all of it, or extract one item and stop. Read all of it; when you find several of a thing, check every one.
 6. **Thrashing / sampling-tour.** Jump between leads, drive none to ground. Pick one and finish it.
 7. **Giving up at the first wall.** A WAF/403 marks the target "dead." Escalate A->B->C before declaring dead.
@@ -361,24 +359,25 @@ move is to go deeper. The urge to wrap up is the signal to keep going.
 - **Honor "stop and report" rules.** If a program says "report a found credential, do NOT probe its scope," stop at discovery; probing trips alarms and gets access revoked.
 - **Own-accounts-only, non-destructive, verify-before-claim.** The operator is at the exploitation boundary (live sessions, browser enroll, captcha, phone OTP); the tools prime and prioritize, the operator lands.
 
-## Working with the vuln-intel MCP tools
+## Working with the vulntel MCP tools
 
 The tools are a **fact substrate, not a verdict**: `similarity` is conceptual, a 200 is reachability, a
 version match is a lead. The tools lay out facts; you supply the expert reasoning, then verify it.
 
 | Step | Tool | What it gives the hunt |
 |---|---|---|
-| **Minute-zero prior** | `program_outcome_prior` | which bug-classes historically LAND on this program and what to skip (lift over base-rate). Needs >=20 disclosed reports, descriptive not predictive |
+| **Minute-zero prior** | `program_outcome_prior` | which bug-classes historically LAND on this program and which rarely do (lift over base-rate; reorder attention, never eliminate). Needs >=20 disclosed reports, descriptive not predictive |
 | Find fresh surface | `new_in_scope` | what just entered a program's scope (re-adds and renames filtered out), with the program's history and advisories for newly added repos; a lead list, then `observe` the host |
 | Recon a live host | `observe` | the real bundle/endpoints; do not guess |
 | Rank the dig order | `hunt_plan` | one ranked order plus recurring loci; do not sampling-tour |
 | Version-specific CVEs | `check_technology` | affected / out-of-range / unconfirmed; never a silent zero |
 | **GENERATE approaches (by-card)** | `find_attack_approaches` | transfer a proven mechanism from real paid reports; novelty-ranked to the non-obvious; `query=` the real surface, `tried=[classes done]` to force what you have not thought of |
 | **GENERATE moves (by-step)** | `find_continuations` | your product-free POSITION to concrete `move_step`s from real report BODIES; every result UNVERIFIED plus a `decisive_check` |
-| **Prove the class is LIVE here** | `search_vulns` | CVE/advisory search by concept/CWE (fuses keyword plus semantic; also `cve_id=` for mechanism-siblings, `days=`/`product=` for the recent window). The killer combo: run it on the class `find_continuations` surfaced |
+| **Check the class recurs in this stack** | `search_vulns` | CVE/advisory search by concept/CWE (fuses keyword plus semantic; also `cve_id=` for mechanism-siblings, `days=`/`product=` for the recent window). The killer combo: run it on the class `find_continuations` surfaced |
 | Dig one finding | `enrich_cve` | full card: KEV/EPSS/SSVC plus temporal plus stability |
 | **Fact-check a claim** | `verify_cve_claim` | catch hallucinations before they reach a report |
 | Vendored/copied vuln code | `search_public_code` | who copy-pasted a known-vulnerable line; RAW hits, you fetch and read to judge unpatched-vs-fossil |
+| Check freshness | `corpus_stats` | corpus size and data age; check it before you trust a "nothing found" |
 | Draft the submission | `assist_submission` | prior-art plus citation guard (Tier 1 only) |
 | Compound across sessions | `hunt_memory_*` *(optional, separate self-hosted memory MCP)* | read your tree as a mirror; record every lead AND every wall (plus its reopen check) so the next run inherits, not restarts |
 

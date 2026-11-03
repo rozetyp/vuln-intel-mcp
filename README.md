@@ -158,10 +158,11 @@ Operating loop, in order:
 2. A live host → observe (a cache miss returns status="scanning"; call again with the same host until "ready"). Mine endpoints[], recurring_loci, the CVE join, not just two fields.
 3. A product + version → check_technology / hunt_plan (dig-order + the recurring CWE loci).
 4. Before asserting ANY CVE / "affects X" / "severity Y" / "exploited" → verify_cve_claim. Never cite from memory.
-5. Feasibility of one CVE → enrich_cve; read the MECHANISM (POST vs GET, auth-required) to judge whether it chains.
+5. Feasibility of one CVE → enrich_cve; read the MECHANISM (POST vs GET, auth-required) to judge whether it chains. How it was fixed in the wild, or who vendored the vulnerable line → search_public_code (raw hits; read them).
 6. Hunting a class → find_attack_approaches for the transferable move; RUN it on the target, don't cite it. Loop with a growing tried=.
-7. Stuck / messy position → find_continuations(position) for the by-step move; then search_vulns that class against the target to prove it's live here.
+7. Stuck / messy position → find_continuations(position) for the by-step move; then search_vulns that class to see whether it recurs in this stack.
 8. Submitting → assist_submission; EXECUTE the techniques it transfers (referrer differential, key-reuse breadth), then file.
+9. Before trusting a "nothing found" → corpus_stats (corpus size and data age).
 Above all: a finding isn't a finding until a cheap check that would kill it has failed to.
 ```
 
@@ -190,7 +191,7 @@ Or any MCP client (`mcp.json`):
 }
 ```
 
-**Try it first with no key:** `claude mcp add --transport http vulntel https://mcp.vulntel.com/mcp`. Nine of the 13 tools run 25 times a day per network, and each answer says how many calls are left. A free key lifts that to 60 calls a minute and adds observe, new_in_scope, assist_submission and search_public_code. See [Get a key](#get-a-key) below.
+**Try it first with no key:** `claude mcp add --transport http vulntel https://mcp.vulntel.com/mcp`. Nine of the 13 tools run 25 times a day per IP address, and each answer says how many calls are left. A free key lifts that to 60 calls a minute and adds observe, new_in_scope, assist_submission and search_public_code. See [Get a key](#get-a-key) below.
 
 ## The 13 tools
 
@@ -239,6 +240,6 @@ Not a scanner, not an exploit tool, not an SBOM / SCA replacement. A grounding, 
 
 ---
 
-For **authorized, defensive** security research and bug-bounty triage. Not for exploitation. Output is decision support, not a substitute for your own verification.
+For **authorized** security research and bug-bounty work, only on targets you are permitted to test. The server returns facts, not attacks; output is decision support, not a substitute for your own verification.
 
 © 2026 rozetyp. All rights reserved. This is not open source; see [LICENSE](LICENSE).

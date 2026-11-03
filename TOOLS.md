@@ -4,7 +4,7 @@
 fused from NVD, CISA KEV, FIRST EPSS, OSV/GHSA, CISA Vulnrichment/SSVC, plus the Debian, Ubuntu and
 Alpine security trackers' fixed builds), **four bug-bounty mechanic-transfer** tools distilled from
 ~14,000 disclosed reports, and `new_in_scope` for fresh scope. The server lays out facts, ranked
-context, and transferable precedent — never an exploit or a payload. Your agent reasons; the target
+context, and transferable precedent from public reports, never a working exploit built for your target. Your agent reasons; the target
 decides what survives.
 
 > **Make your agent actually call these.** A great tool the agent never invokes is worthless — agents
@@ -420,4 +420,4 @@ new_in_scope(days=7)   // 2026-11-03
 ---
 
 For **authorized, defensive** security research and bug-bounty triage. Output is decision support,
-not a substitute for your own verification — and never an exploit or payload.
+not a substitute for your own verification, and never a working exploit built for your target.

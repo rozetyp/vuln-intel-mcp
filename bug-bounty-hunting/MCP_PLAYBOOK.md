@@ -1,6 +1,6 @@
-# MCP_PLAYBOOK: vuln-intel as a bug-hunting second brain
+# MCP_PLAYBOOK: vulntel as a bug-hunting second brain
 
-Single source of truth for driving the **vuln-intel MCP** during a hunt: how to turn its corpus tools into
+Single source of truth for driving the **vulntel MCP** during a hunt: how to turn its corpus tools into
 landed findings, not CVE lookups. Self-contained; pairs with the `bug-bounty-hunting` skill (the cognition
 and discipline layer), but stands alone.
 
@@ -20,9 +20,9 @@ stateless reasoner cannot self-generate: **watched-over-time** (priors / tempora
 2. **Recon with a browser UA** (§5), then `observe` each live host. It is **async**: a cache miss returns `status="scanning"` immediately, so poll by calling `observe` again until `status="ready"` (SPAs take ~1-4 min); a recent scan returns instantly. Mine the WHOLE ready response (`endpoints[]`, `recurring_loci`, `internal_hosts`, `affected`-flags, `exploitation_signal`), not 2 fields.
 3. **Version-match.** `check_technology` / `hunt_plan`; for any in-range KEV CVE, run a **non-destructive PoC oracle** (a safe version/endpoint probe, never a destructive exploit); do not just read `out_of_range`.
 4. **`verify_cve_claim` BEFORE any claim.** Catches your own over-claims (§7).
-5. **`enrich_cve`.** Full mechanism plus SSVC plus live PoC repos. Read it to decide *feasibility* (e.g. POST-vs-GET decides if an SSRF can deliver an RCE).
+5. **`enrich_cve`.** Full mechanism plus SSVC plus live PoC repos. Read it to decide *feasibility* (e.g. POST-vs-GET decides if an SSRF can deliver an RCE). `search_public_code` on the fixed line shows how it was patched in the wild and who vendored the unpatched copy.
 6. **Transfer-AND-EXECUTE.** `find_attack_approaches` gives `source -> sink -> trigger`; run those moves on the target (do not cite them). Loop with growing `tried=` (§4).
-6b. **Stuck, or holding a messy pile of capabilities.** `find_continuations(position)`: describe your *product-free attacker state*, get concrete `move_step`s from full report **bodies** (the by-step layer, §4b). **Then immediately `search_vulns` the surfaced class against the target**: "mechanic plus proof it is live here" is the strongest where-to-dig signal. Orientation, NOT a finder; every result `UNVERIFIED`, so source-verify before claiming.
+6b. **Stuck, or holding a messy pile of capabilities.** `find_continuations(position)`: describe your *product-free attacker state*, get concrete `move_step`s from full report **bodies** (the by-step layer, §4b). **Then immediately `search_vulns` the surfaced class against the target**: "mechanic plus evidence the class recurs in this stack" is the strongest where-to-dig signal. Orientation, NOT a finder; every result `UNVERIFIED`, so source-verify before claiming.
 7. **`assist_submission`.** Transfers the *winning submission techniques* from accepted reports; execute them (referrer differential, key-reuse breadth, scope-containment), then file.
 
 ---
@@ -153,7 +153,7 @@ finding. **Always pair them, and never stop at them.**
 How you *know* you have actually cleared a surface, not just gotten bored (walls are wins, but only a
 *survived* wall counts):
 1. Every material candidate mechanic reached a **decisive check** (source inspection, patch analysis, config confirmation, protocol constraint, or a scoped live test) and **died with evidence** (not "sounds unlikely").
-2. You **re-looped `find_attack_approaches`/`find_continuations` with a growing `tried=`** across the bug-class layers (access-control, auth, injection, client-side), not just the first layer.
+2. You **re-looped `find_attack_approaches` with a growing `tried=` (and `find_continuations` with your updated position)** across the bug-class layers (access-control, auth, injection, client-side), not just the first layer.
 3. A comprehensive-state query returns **only off-target cards at high tried-similarity**: the corpus is echoing your own tried set back, nothing new.
 4. The **sibling sweep is dry** (no untested endpoint / parameter of the same class remains).
 5. The remainder is **gated by a NAMED external unblock or rule** (a credential you do not hold, a WAF, a scope boundary), written down, not vague.
